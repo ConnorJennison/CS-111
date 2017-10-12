@@ -260,7 +260,6 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-                
             }
             
             //LOOK TO SEE IF THE INPUT CLOSED ITS CONNECTION, I.E. WE DID ^D FROM TERMINAL
@@ -273,10 +272,65 @@ int main(int argc, char* argv[])
                     exit(1);
                 }
                 fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
+                close(fromshell[0]);
                 exit(0);
+            }
+            
+            //GET THE REST OF THE OUTPUT FROM THE SHELL BEFORE CLOSING
+            if (poll[0].revents & POLLERR || poll[0].revents & POLLHUP)
+            {
+                num_chars = read(fromshell[0], buffer, sizeof(buffer));
+                if (num_chars > 0)
+                {
+                    for (int i = 0; i < num_chars; i++)
+                    {
+                        //RECIEVED EOF FROM SHELL, TIME TO TERMINATE
+                        if (buffer[i] == 0x04)
+                        {
+                            //Need to get exit status from child process though
+                            int exit_status;
+                            if (waitpid(shell_pid, &exit_status, 0) == -1)
+                            {
+                                fprintf(stderr, "Error with closing shell process. %s\n", strerror(errno));
+                                exit(1);
+                            }
+                            fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
+                            exit(0);
+                        }
+                        
+                        // TURN LINE FEED INTO LINE FEED AND CARRIAGE RETURN
+                        else if(buffer[i] == '\n')
+                        {
+                            char* output = "\r\n";
+                            write(STDOUT_FILENO, output, 2);
+                        }
+                        
+                        // NORMAL OUTPUT
+                        else
+                        {
+                            write(STDOUT_FILENO, &buffer[i], 1);
+                        }
+                    }
+                }
+                
+                //NO MORE OUTPUT FROM SHELL, WE CAN CLOSE NOW
+                else
+                {
+                    int exit_status;
+                    close(fromshell[0]);
+                    if (waitpid(shell_pid, &exit_status, 0) == -1)
+                    {
+                        fprintf(stderr, "Error closing shell process. %s\n", strerror(errno));
+                        exit(1);
+                    }
+                    fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
+                    exit(0);
+                }
             }
            free(buffer);
         }
+        
+        
         
         
     }
