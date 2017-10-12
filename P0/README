@@ -1,0 +1,46 @@
+NAME: Connor Jennison
+EMAIL: connorjennison@me.com
+ID: 904474415
+
+This README explains my implementation of Project 0. As well as the challenges I faced along the way. 
+
+lab0.c:
+	The most difficult part of implementing the program was working with
+	getopt_long, as I hadn't used that API before. I was able to figure that
+	out and the rest of the file wasn't too difficult for me to implement in
+	terms of the executation, but it took some time to plan everything
+	out. I was able to have a better idea though after reading thoroughly
+	through the spec. The code parses through the arguments provided. If
+	--catch is provided, it is immediately sent to the signal handler to be
+	dealt with. If --segfault but not --catch, A segfault is triggered
+	attempting to derefrence a null pointer. Otherwise, if the input and
+	output arguments are valid, the code attempts to open them, and if done
+	successfully, the input is copied byte by byte into output. 
+
+Makefile: 
+	 Personally, this was by far the most tideous and difficult part of the
+	 project, specifically with make check. I had a lot of issues getting my
+	 shell script to towk in the context of the makefile, and couldn't find
+	 answers at first, but after going to my TA office hours Wednesday at 2,
+	 we were able to find a solution on stack exchange, and when I
+	 implemented it, it worked to perfection. The relevant thread can be
+	 found here
+	 (https://stackoverflow.com/questions/41450665/makefile-giving-unexpected-end-of-file-error). I
+	 didn't know I had to use the ; \ notation in Makefile for it to work,
+	 but after fixing it I was able to implement all 8 tests. I tested for
+	 redirection, normal input and output, bad input file given, bad output
+	 file given, segfault caught by signal handler, segfault triggered by
+	 itself, correctly prints usage when no input specified, correctly
+	 prints usage with no output specified. In addition to the options
+	 required, I also added a make debug option to make the executable to be
+	 used with GDB. 
+
+
+
+How to use: 
+
+make all/ make - makes the program
+make clean - cleans up any files created by make check
+make check - Checks to make sure the program works properly for all cases. 
+make dist - Creates the tarball distribution  makefil options
+make debug - Creates the executable with the -g option to be used by GDB
