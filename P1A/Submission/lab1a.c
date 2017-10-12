@@ -86,7 +86,8 @@ int main(int argc, char* argv[])
     /* Set up shell */
     if(shell)
     {
-        //Create pipes
+      signal(SIGPIPE, handler);
+      //Create pipes
         int toshell[2];
         int fromshell[2];
         
@@ -273,11 +274,11 @@ int main(int argc, char* argv[])
                     }
                     fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
                     close(fromshell[0]);
-                    exit(0);
+                    exit(0);
                 }
                 
                 //GET THE REST OF THE OUTPUT FROM THE SHELL BEFORE CLOSING
-                if (poll[0].revents & POLLERR || poll[0].revents & POLLHUP)
+                if (polls[0].revents & POLLERR || polls[0].revents & POLLHUP)
                 {
                     num_chars = read(fromshell[0], buffer, sizeof(buffer));
                     if (num_chars > 0)
@@ -324,10 +325,9 @@ int main(int argc, char* argv[])
                             exit(1);
                         }
                         fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
-                        exit(0);
+                        exit(0);
                     }
                 }
-                free(buffer);
             }
         }
     }
@@ -360,7 +360,6 @@ int main(int argc, char* argv[])
                     write(STDOUT_FILENO, &buffer[i], 1);
             }
         }
-        free(buffer);
     }
     return 0;
 }
