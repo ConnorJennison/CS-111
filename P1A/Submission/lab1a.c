@@ -239,6 +239,7 @@ int main(int argc, char* argv[])
                                 if (waitpid(shell_pid, &exit_status, 0) == -1)
                                 {
                                     fprintf(stderr, "Error with closing shell process. %s\n", strerror(errno));
+                                    exit(1);
                                 }
                                 fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
                                 exit(0);
@@ -260,6 +261,19 @@ int main(int argc, char* argv[])
                     }
                 }
                 
+            }
+            
+            //LOOK TO SEE IF THE INPUT CLOSED ITS CONNECTION, I.E. WE DID ^D FROM TERMINAL
+            if (polls[1].revents & POLLHUP)
+            {
+                int exit_status;
+                if (waitpid(shell_pid, &exit_status, 0) == -1)
+                {
+                    fprintf(stderr, "Error closing shell process. %s\n", strerror(errno));
+                    exit(1);
+                }
+                fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
+                exit(0);
             }
            free(buffer);
         }
