@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
                                     fprintf(stderr, "Error with closing shell process. %s\n", strerror(errno));
                                 }
                                 fprintf(stderr, "SHELL EXIT SIGNAL=%d STATUS=%d\n", WTERMSIG(exit_status) ,WEXITSTATUS(exit_status));
-                                exit(0);
+                                exit(0);
                             }
                             
                             // TURN LINE FEED INTO LINE FEED AND CARRIAGE RETURN
