@@ -86,7 +86,9 @@ int main(int argc, char* argv[])
     /* Set up shell */
     if(shell)
     {
+      //register the signal handler to deal with SIGPIPE 
       signal(SIGPIPE, handler);
+      
       //Create pipes
         int toshell[2];
         int fromshell[2];
@@ -144,7 +146,6 @@ int main(int argc, char* argv[])
         else //IN THE PARENT PROCESS
         { //PARENT PROCESS
             //close unecessary pipes in parent shell
-            printf("Closing stuff");
             close(fromshell[1]);
             close(toshell[0]);
             

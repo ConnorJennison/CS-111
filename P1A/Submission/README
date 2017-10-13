@@ -2,4 +2,8 @@ NAME: Connor Jennison
 EMAIL: connorjennison@me.com
 ID: 904474415
 
-This is sample text to fill in the README
+The first file that this tarball contains is lab1a.c This executible can be compiled normally, or with the option --shell. Whend one normally, we just have a terminal that hangs and immediately prints out what we ty;e byte by byte to the screen as we type it, and hangs until we get type '^D'. With the --shell option specified, we have a parent process that forks a shell child process. The parent process gets input, echos output, and sends it to the child process via a pipe. The child process processes what it just recieved and runs it in bash, then takes the output and pipes it back to the parent process.By far the hardest part of this project for me was figuring out how to work with poll and get the parenta nd child process to talk to each other with the different modes.
+
+This lab also contains this README, and a makefile that builds the default target, as well as make clean, make dist to make the tarball, and make debug to make debugging simpler.
+
+Note: Due to personal stuff going in, this assignment was turned in between 0-1 Days late for a 4% deduction. 
